@@ -1,20 +1,20 @@
 #!/usr/bin/env python
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
-from StyleChecker import            evaluate_style
-from CredibilityChecker import      evaluate_credibilty
-from PropagationChecker import     evaluate_propagation
-from KnowledgeChecker import        evaluate_knowledge
-
+import json
+from StyleChecker import evaluate_style
+from CredibilityChecker import evaluate_credibility
+from PropagationChecker import evaluate_propagation
+from KnowledgeChecker import evaluate_knowledge
+import time
 
 # HTTPRequestHandler class
 class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
- 
-  # GET
-  def do_GET(self):
+    # GET
+    def do_GET(self):
         # Send response status code
         self.send_response(200)
- 
+
         # Send headers
         self.send_header('Content-type','text/html')
         self.end_headers()
@@ -25,28 +25,31 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         currentRequestID = query_components["requestID"]
         evaltext = query_components["text"]
         url = query_components["url"]
+        if (evaltext == "empty"):
+            evaltext = ""
 
-        #wait for scores to get
-        points_style =      evaluate_style(currentRequestID,evaltext,url)
-        points_credibility= evaluate_credibilty(currentRequestID,evaltext,url)
-        points_propagation= evaluate_propagation(currentRequestID,evaltext,url)
-        points_knowledge =  evaluate_knowledge(currentRequestID,evaltext,url)
- 
-        # Send message back to client
-        message = "Hello world!"
+        #after 10 seconds merge all json files, even if they are empty --> timeout
+        #TODO
 
-        # Write content as utf-8 data
-        self.wfile.write(bytes(message, "utf8"))
+        #merge json
+        merged_jsons = {}
+        merged_jsons["credibility"] = evaluate_credibilty(currentRequestID,evaltext,url)
+        merged_jsons["style"] = evaluate_style(currentRequestID,evaltext,url)
+        merged_jsons["propagation"] = evaluate_propagation(currentRequestID,evaltext,url)
+        merged_jsons["knowledge"] = evaluate_knowledge(currentRequestID,evaltext,url)
+        return_json = json.dumps(merged_jsons)
+
+        #time.sleep(7)
+
+        #TEST
+        self.wfile.write(bytes(return_json, "utf8"))
         return
- 
+
 def run():
-  print('starting server...')
- 
-  # Server settings
-  # Choose port 8080, for port 80, which is normally used for a http server, you need root access
-  server_address = ('172.16.78.236', 8081)
-  httpd = HTTPServer(server_address, testHTTPServer_RequestHandler)
-  print('running server...')
-  httpd.serve_forever()
+    print('starting server...')
+    server_address = ("192.168.43.7" , 8081)
+    httpd = HTTPServer(server_address, testHTTPServer_RequestHandler)
+    print('running server...')
+    httpd.serve_forever()
 run()
 
