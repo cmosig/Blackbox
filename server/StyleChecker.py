@@ -42,8 +42,8 @@ def getPageContent(url):
     }
     response = requests.post('https://api.aylien.com/api/v1/extract', data=data, headers=headers)
 
-    print(response.status_code)
-    print(response.json())
+    print("PageExtractor: ", response.status_code)
+    # print(response.json())
 
     return response.json()['title'], response.json()['article']
 
@@ -57,7 +57,7 @@ def fnews_detector(url=None, title=None, content=None):
 
     headers = {'Content-type': 'application/json'}
     response = requests.get(url, headers=headers) 
-    print(response.status_code)
+    print("faknews.org: ", response.status_code)
 
     if response.status_code >= 500:
         print('[!] [{0}] Server Error'.format(response.status_code))
@@ -93,6 +93,7 @@ def fakebox(url=None, title=None, content=None):
     headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 
     response = requests.post('http://localhost:8080/fakebox/check', json=json, headers=headers) 
+    print("fakebox: ", response.status_code)
 
     if response.status_code >= 500:
         print('[!] [{0}] Server Error'.format(response.status_code))
@@ -119,7 +120,7 @@ def eval_fn_detector_json(json):
     api_json = {}
     api_json['name'] = "fakenewsdetector.org"
 
-    print("json: ", json)
+    # print("json: ", json)
     scores = list(json['robot'].values())
     
     score = 1 - log_fun(sum(scores) + scores[0])
@@ -132,7 +133,7 @@ def eval_fn_detector_json(json):
     keywords = json['keywords']
 
     msg = ""
-    print(keywords)
+    # print(keywords)
 
     if len(keywords) > 0:
         msg += "- keywords: "
@@ -149,7 +150,7 @@ def eval_fn_detector_json(json):
         domain = json['domain']
         msg += "\n- is in category " + domain['category'].upper()
 
-    print(msg)
+    # print(msg)
     api_json['info'] = msg
 
     return score, api_json
@@ -172,7 +173,7 @@ def eval_fakebox_json(json):
     keywords = list(json['content']['keywords'])
 
     msg = ""
-    print(keywords)
+    # print(keywords)
 
     if len(keywords) > 0:
         msg += "- keywords: "
@@ -190,7 +191,7 @@ def eval_fakebox_json(json):
         msg += "\n- " + domain['domain']
         msg += " is in category " + domain['category'].upper()
 
-    print(msg)
+    # print(msg)
     api_json['info'] = msg
 
     return score, api_json
@@ -200,8 +201,8 @@ def evaluate_style(rID, text, url):
     count = 0
     style_json = {}
     style_json['apis'] = []
+
     title, content = "", ""
-    
     if url:
         title, content = getPageContent(url)
     
@@ -216,7 +217,7 @@ def evaluate_style(rID, text, url):
         fakebox_eval = fakebox(url=url, title=title, content=content)
 
     
-    print(fakebox_eval)
+    # print(fakebox_eval)
 
     if fakebox_eval:
         box_score, api_json = eval_fakebox_json(fakebox_eval)
@@ -227,11 +228,6 @@ def evaluate_style(rID, text, url):
 
         style_json['apis'].append(api_json)
 
-    style_json['score'] = score
-
-    return score, style_json
-    
-
 
     #### fakenewsdetector.org ####
     fndetector_eval = None
@@ -240,15 +236,15 @@ def evaluate_style(rID, text, url):
     else:
         fndetector_eval = fnews_detector(url=url, title=title, content=content)
 
-    print(fndetector_eval)
+    # print(fndetector_eval)
 
-    if fakebox_eval:
+    if fndetector_eval:
         detector_score, api_json = eval_fn_detector_json(fndetector_eval)
 
         if count == 0:
             score = detector_score
             count += 1
-        else:
+        elif detector_score != -1:
             score += detector_score
             count += 1
 
@@ -260,17 +256,6 @@ def evaluate_style(rID, text, url):
     return style_json
     
 
-
-
-
-
-if __name__ == "__main__":
-    score, json = evaluate_style(0, None,"https://www.activistpost.com/2019/05/five-years-in-prison-for-offending-someone-online-and-other-news-from-the-twilight-zone.html")
-    
-    print(score)
-    print(json)
-
-# curl -XPOST -H "Content-Type: application/json" -d '{"title":"Article title goes here","content":"The article content goes here","url":"http://www.bbc.co.uk/news/uk-39657382"}' "http://localhost:8080/fakebox/check
 
 if __name__ == "__main__":
     json = evaluate_style(0, None,"https://www.activistpost.com/2019/05/five-years-in-prison-for-offending-someone-online-and-other-news-from-the-twilight-zone.html")

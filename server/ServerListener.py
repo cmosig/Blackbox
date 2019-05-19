@@ -54,7 +54,7 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
             #merge json
             merged_jsons = {}
             merged_jsons["credibility"] = evaluate_credibility(currentRequestID,evaltext,url)
-            #merged_jsons["style"] = evaluate_style(currentRequestID,evaltext,url)
+            merged_jsons["style"] = evaluate_style(currentRequestID,evaltext,url)
             #merged_jsons["propagation"] = evaluate_propagation(currentRequestID,evaltext,url)
             #merged_jsons["knowledge"] = evaluate_knowledge(currentRequestID,evaltext,url)
 
@@ -90,5 +90,7 @@ def run():
     httpd = HTTPServer(server_address, testHTTPServer_RequestHandler)
     print('running server...')
     httpd.serve_forever()
-run()
+
+if __name__ == "__main__":
+  run()
 
