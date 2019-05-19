@@ -5,7 +5,7 @@ import json
 import math
 import numpy
 
-def evaluate_credibility(currentRequestID,evaltext,url):
+def evaluate_credibility(currentRequestID,text,url):
     overall_score = 0
     message = ""
 
@@ -19,17 +19,22 @@ def evaluate_credibility(currentRequestID,evaltext,url):
     #calculate overall credibilty
     scores = []
     for api_result in api_jsons:
-        scores.append(api_jsons["score"])
-    overall_score = sum(scores) / len(api_jsons)
-
     # if score == -1 --> ignore
+        if (api_result["score"] > 0):
+            scores.append(api_result["score"])
+    if (len(scores) > 0):
+        overall_score = sum(scores) / len(scores)
+    else:
+        overall_score = -1
+
     # if message == "" ignore
 
     return_json = {}
-    return_json["score"] = overall_score
+    return_json["score"] = (overall_score)
+
     return_json["apis"] = api_jsons
 
-    set_score(requestID,"credibility",return_json)
+    return return_json
 
 
 def get_FakeNewsAI(url):
@@ -37,17 +42,18 @@ def get_FakeNewsAI(url):
     response = urllib.request.urlopen(fakenewsai.replace("<url>",url))
     string = response.read().decode('utf-8')
     json_obj = json.loads(string)
-    if (json_obj['error'] == 'true'):
-        return -1
+    if (json_obj['error']):
+        score = -1
     try:
         resultAccuracy = json_obj['result']
         fake = json_obj['fake']
+        if (fake):
+            score = 10
+        else:
+            score = 90
     except:
-        return -1
-    if (fake):
-        return 1 - float(resultAccuracy)
-    else:
-        return float(resultAccuracy)
+        score = -1
+    return to_api_json("FakeNewsAi",score,"")
 
 def get_Averifai_SourceCheck(url):
     adverifai = "https://adverifai-api.p.rapidapi.com/source_check?url=<url>"
@@ -65,7 +71,7 @@ def get_Averifai_SourceCheck(url):
         message = json_obj["fakeDescription"]
     except:
         pass
-    return to_api_json("Averfai",score,"") 
+    return to_api_json("Averfai",score,"tags: "+message) 
     
 def to_api_json(name,score,info):
     output_json_api = {}
@@ -83,7 +89,7 @@ def get_Averfai_FakeReferences(text):
     adverifai = "https://adverifai-api.p.rapidapi.com/fake_ref?headline=<text>"
     score = -1 
     message = ""
-    request = urllib.request.Request(adverifai.replace("<text>",text),
+    request = urllib.request.Request(adverifai.replace("<text>",urllib.parse.quote(text)),
             headers = {
                 "X-RapidAPI-Host": "adverifai-api.p.rapidapi.com",
                 "X-RapidAPI-Key": "bf1a959dc0msh6fa10f164eecd72p1b9501jsn8bd06e9dd1f0" }
@@ -92,19 +98,20 @@ def get_Averfai_FakeReferences(text):
         response = response.read().decode('utf-8')
     json_obj = json.loads(response)
 
-    #calculate score by number of references in fake news sites found
-    numberRefs = len(json_obj["fakeRef"])
-    score = 100 * 2**(-numberRefs)
-
-    #site types
     sitetypes = []
-    for ref in json_obj["fakeRef"]:
-        sitetypes.append(ref["site_type"])
+    try:
+        numberRefs = len(json_obj["fakeRef"])
+        score = 100 * 2**(-numberRefs)
+        #site types
+        for ref in json_obj["fakeRef"]:
+            sitetypes.append(ref["site_type"])
+    except:
+        pass
     message = "site types: " + ''.join(list(dict.fromkeys(sitetypes)))
     return to_api_json("Averfai",score,message) 
 
-#print(get_Averfai_FakeReferences("https://www.activistpost.com"))
+#print(get_Averfai_FakeReferences("Love Me Trump"))
 #print(get_Averifai_SourceCheck("https://www.activistpost.com"))
 #print(get_Averifai_SourceCheck("bients.com"))
 #print(get_Averifai_SourceCheck("facebook.com"))
-#print(get_FakeNewsAI("http://google.de"))
+#print(get_FakeNewsAI("https://www.activistpost.com"))

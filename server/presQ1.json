@@ -1,0 +1,82 @@
+{
+    "credibility" : {
+        "score": 87.3332,
+        "apis": [
+            {
+                "name": "testAPI1",
+                "score": 6,
+                "info": "testinfo"
+            },
+            {
+                "name": "testAPI2",
+                "score": 9,
+                "info": "neue info"
+            }
+        ]
+    },
+    "propagation" : {
+        "score": 47.323,
+        "apis": [
+            {
+                "name": "testAPI1",
+                "score": 6,
+                "info": "testinfo"
+            },
+            {
+                "name": "testAPI2",
+                "score": 9,
+                "info": "neue info"
+            },
+            {
+                "name": "testAPI3",
+                "score": 9,
+                "info": "neue tolle info"
+            }
+        ]
+    },
+    "style" : {
+        "score": 86.333,
+        "apis": [
+            {
+                "name": "testAPI1",
+                "score": 6,
+                "info": "testinfo"
+            },
+            {
+                "name": "testAPI2",
+                "score": 9,
+                "info": "neue info"
+            }
+        ]
+    },
+    "knowledge" : {
+        "score": 91.22,
+        "apis": [
+            {
+                "name": "testAPI1",
+                "score": 6,
+                "info": "testinfo"
+            },
+            {
+                "name": "testAPI2",
+                "score": 9,
+                "info": "neue info"
+            },
+            {
+                "name": "testAPI3",
+                "score": 9,
+                "info": "neue tolle info"
+            },
+            {
+                "name": "testAPI3",
+                "score": 9,
+                "info": "neue tolle info"
+            },
+            {
+                "name": "testAPI3",
+                "score": 9,
+                "info": "neue tolle info"
+            }
+        ]
+    }
+}
