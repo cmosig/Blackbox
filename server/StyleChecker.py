@@ -121,10 +121,6 @@ def evaluate_style(rID, text, url):
 
     return score, style_json
     
-
-
-
-
 # class StyleChecker():
 #     def __init__(self, url=None, content=None, title=None):
 #         if content is None and url is not None:
