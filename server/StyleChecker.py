@@ -3,6 +3,7 @@
 import requests
 import re
 import math
+import json
 
 def getPageContent(url):
     url = "http://boilerpipe-web.appspot.com/extract?url=" + url + "&output=json"
@@ -135,16 +136,20 @@ def eval_fn_detector_json(json):
     msg = ""
     # print(keywords)
 
+    msg += "- scores: "
+
+    string_scores = []
+
+    for index, sscore in enumerate(scores):
+        string_scores.append(str(int((1-sscore)*100)))
+
+    msg += "Fake News: " + string_scores[0] + ", "
+    msg += "Extremely Biased: " + string_scores[1] + ", "
+    msg += "Clickbait: " + string_scores[2]
+
     if len(keywords) > 0:
-        msg += "- keywords: "
+        msg += "\n- keywords: "
 
-    for index, keyword in enumerate(keywords):
-        if index > 0:
-            msg += ", "
-        msg += keyword
-
-        if index == len(keywords) - 1:
-            msg += "\n"
 
     if json['domain']:
         domain = json['domain']
@@ -200,58 +205,67 @@ def evaluate_style(rID, text, url):
     score = -1
     count = 0
     style_json = {}
+    style_json['score'] = -1
     style_json['apis'] = []
 
     title, content = "", ""
     if url:
         title, content = getPageContent(url)
-    
+        print('got title and content successfully') 
         text=None
 
 
     #### Fakebox ####
     fakebox_eval = None
-    if text:
-        fakebox_eval = fakebox(content=text)
-    else:
-        fakebox_eval = fakebox(url=url, title=title, content=content)
+    try:
+        if text:
+            fakebox_eval = fakebox(content=text)
+        else:
+            fakebox_eval = fakebox(url=url, title=title, content=content)
 
-    
-    # print(fakebox_eval)
+        
+        # print(fakebox_eval)
 
-    if fakebox_eval:
-        box_score, api_json = eval_fakebox_json(fakebox_eval)
+        if fakebox_eval:
+            box_score, api_json = eval_fakebox_json(fakebox_eval)
 
-        if box_score != -1:
-            score = box_score
-            count += 1
+            if box_score != -1:
+                score = box_score
+                count += 1
 
-        style_json['apis'].append(api_json)
+            style_json['apis'].append(api_json)
+    except:
+        pass
 
 
     #### fakenewsdetector.org ####
     fndetector_eval = None
-    if text:
-        fndetector_eval = fnews_detector(content=text)
-    else:
-        fndetector_eval = fnews_detector(url=url, title=title, content=content)
+    try:
+        if text:
+            fndetector_eval = fnews_detector(content=text)
+        else:
+            fndetector_eval = fnews_detector(url=url, title=title, content=content)
 
-    # print(fndetector_eval)
 
-    if fndetector_eval:
-        detector_score, api_json = eval_fn_detector_json(fndetector_eval)
+        if fndetector_eval:
+            detector_score, api_json = eval_fn_detector_json(fndetector_eval)
 
-        if count == 0:
-            score = detector_score
-            count += 1
-        elif detector_score != -1:
-            score += detector_score
-            count += 1
+            if count == 0:
+                score = detector_score
+                count += 1
+            elif detector_score != -1:
+                score += detector_score
+                count += 1
 
-        style_json['apis'].append(api_json)
+            print("api_json:", api_json)
+            style_json['apis'].append(api_json)
+    except:
+        pass
 
-    score //= count
-    style_json['score'] = score
+    if count > 0:
+        score //= count
+        style_json['score'] = score
+    print("style_json:",style_json)
 
     return style_json
     

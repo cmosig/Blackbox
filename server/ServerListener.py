@@ -58,7 +58,6 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
             #merged_jsons["propagation"] = evaluate_propagation(currentRequestID,evaltext,url)
             #merged_jsons["knowledge"] = evaluate_knowledge(currentRequestID,evaltext,url)
 
-            merged_jsons["style"] = {"score": 95.544, "apis": []}
             merged_jsons["propagation"] = {"score": 69.33, "apis": [
                 {"name": "FakeNewsAi", "score": 2.9665915957085165, "info": ""},
                 {"name": "Averfai", "score": 2, "info": "tags: unworthy"}, 
@@ -85,7 +84,7 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
 
 def run():
     print('starting server...')
-    server_address = ("192.168.43.7" , 8081)
+    server_address = ("172.16.76.69" , 8081)
  #   server_address = ("172.16.51.23" , 8081)
     httpd = HTTPServer(server_address, testHTTPServer_RequestHandler)
     print('running server...')

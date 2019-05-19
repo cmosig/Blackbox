@@ -3,7 +3,6 @@ from urllib.parse import urlparse, parse_qs
 from http.client import HTTPResponse
 import json
 import math
-import numpy
 
 def evaluate_credibility(currentRequestID,text,url):
     overall_score = 0
