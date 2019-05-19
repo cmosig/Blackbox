@@ -263,18 +263,6 @@ def evaluate_style(rID, text, url):
 
 
 
-# class StyleChecker():
-#     def __init__(self, url=None, content=None, title=None):
-#         if content is None and url is not None:
-#             self.title, self.content = self.getPageContent(url)
-#         else:
-#             self.
-
-#     def getPageContent():
-#         pass
-
-answer = {'success': True, 'title': {'decision': 'impartial', 'score': 0.8350648283958435, 'entities': [{'text': 'Five Years', 'start': 0, 'end': 9, 'type': 'date'}, {'text': 'The Twilight Zone', 'start': 71, 'end': 87, 'type': 'organization'}]}, 'content': {'decision': 'bias',
-'score': 0.2320660501718521, 'entities': [{'text': 'weekly', 'start': 8, 'end': 13, 'type': 'date'}, {'text': 'Asian', 'start': 60, 'end': 64, 'type': 'group'}, {'text': 'SAT', 'start': 89, 'end': 91, 'type': 'organization'}, {'text': '1926', 'start': 113, 'end': 116, 'type': 'date'}, {'text': 'this week', 'start': 266, 'end': 274, 'type': 'date'}, {'text': 'SAT', 'start': 337, 'end': 339, 'type': 'organization'}, {'text': 'Asian', 'start': 564, 'end': 568, 'type': 'group'}, {'text': 'SAT', 'start': 622, 'end': 624, 'type': 'organization'}, {'text': '1223', 'start': 635, 'end': 638, 'type': 'date'}, {'text': 'Asians', 'start': 641, 'end': 646, 'type': 'group'}, {'text': 'SAT', 'start': 713, 'end': 715, 'type': 'organization'}, {'text': 'Asian', 'start': 748, 'end': 752, 'type': 'group'}], 'keywords': [{'keyword': 'asian test taker'}, {'keyword': 'average sat score'}, {'keyword': 'low income household'}, {'keyword': 'poor high school'}, {'keyword': 'new sat scoring'}, {'keyword': 'university entrance exam'}, {'keyword': 'high crime neighborhood'}, {'keyword': 'poor test result'}, {'keyword': 'weekly absurdity begin'}, {'keyword': 'high school'}]}, 'domain': {'domain': 'activistpost.com', 'category': 'conspiracy'}}
 
 if __name__ == "__main__":
     score, json = evaluate_style(0, None,"https://www.activistpost.com/2019/05/five-years-in-prison-for-offending-someone-online-and-other-news-from-the-twilight-zone.html")
